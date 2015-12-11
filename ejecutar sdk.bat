@@ -1,0 +1,1 @@
+suite-sdk debug C:\Proyecto\mobile-wps
