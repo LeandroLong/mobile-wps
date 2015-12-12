@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 var MostrarMenu=Ext.extend(gxp.plugins.Tool,{
 	
 	ptype:"app_mostrarmenu",

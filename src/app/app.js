@@ -29,14 +29,11 @@
  * @require MostrarMenu.js
  * @require plugins/Legend.js
  * @require AreaInfluenciaMobile.js
+ * @require DondeEstoy.js
 
  */
 
-
- 
  var dispositivo = navigator.userAgent.toLowerCase();
- 
- 
  
  
  if( dispositivo.search(/iphone|ipod|ipad|android|chrome|mozilla/) > -1 ){
@@ -97,8 +94,9 @@
         },
         outputTarget: "arbolCapas"
     },
-	{ ptype: "app_areainfluenciamobile",outputTarget: "map.tbar"},
-	{ ptype: "app_mostrarmenu", outputTarget: "lugaresCercanos"}
+	{ ptype: "app_dondeestoy"},
+	{ ptype: "app_areainfluenciamobile",outputTarget: "map.tbar"}
+
 	],
     
     // layer sources
@@ -107,8 +105,7 @@
             ptype: "gxp_wmscsource",
             url: "/geoserver/wms",
             version: "1.1.1"
-        },
-        
+        },        
 		google: {
 			ptype: "gxp_googlesource"
 } ,

@@ -22,26 +22,6 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
     
     /** Inicio del plugin */
     init: function(target) {
-		
-		this.cord;
-			var options = {
-			enableHighAccuracy: false,
-			timeout: 5000,
-			maximumAge: 0
-			};
-
-			function success(pos) {
-			cord = pos.coords;
-			
-				};
-
-			function error(err) {
-			console.warn('ERROR: No se pudo calcular su ubicación!');
-			alert(err.message);
-				};
-
-			navigator.geolocation.getCurrentPosition(success, error, options);
-			
         AreaInfluenciaBuffer.superclass.init.apply(this, arguments);
 		
 		
@@ -66,8 +46,6 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 			this.directionsDisplay.setMap(this.mapaMio);	
 			this.directionsService = new google.maps.DirectionsService;
 			
-			
-			
             // Algunos valores predeterminados
             var actionDefaults = {
                 map: target.mapPanel.map,
@@ -80,8 +58,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 			
 			//Acción para la probar WFS
                     new GeoExt.Action(Ext.apply({
-                    text: 'Area de Influencia',
-					cls: 'miClase',
+                    text: 'Area de Influencia: ',
 					handler: this.muestraMenu.createDelegate(this),
                     control: new OpenLayers.Control.DrawFeature(
                         this.layer,OpenLayers.Handler.Point, {
@@ -116,24 +93,20 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 	// Proceso que ejecuta un BUFFER
     buffer: function(evt) {
 		
-		
-	   // alert(cord.latitude + ' ' + cord.longitude);
-	    for(var z=this.layer.features.length-1; z>=0; --z){
-		this.layer.removeFeatures(this.layer.features[z]);
+		//Borra los poligonos dibujados
+		for(var z=this.layer.features.length-1; z>=0; --z){
+			this.layer.removeFeatures(this.layer.features[z]);
 		}	
 	   
 		
 		
 		var wpsFormat= new OpenLayers.Format.WPSExecute(); 
-		var posicion= new OpenLayers.Format.WKT();		
-       		
-		var p = new Proj4js.Point(cord.latitude,cord.longitude);
-	//	var pAux 
-		alert(p);
+		var posicion= new OpenLayers.Format.WKT();		    
+		var p = new Proj4js.Point(evt.feature.geometry.x,evt.feature.geometry.y);
+	
      // Definen en Proj4js los sistemas de coordenadas
 		Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
-		Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-		var fuente = new Proj4js.Proj('EPSG:4326');
+		var fuente = new Proj4js.Proj('EPSG:900913');
 		Proj4js.defs["EPSG:22185"] = "+proj=tmerc +lat_0=-90 +lon_0=-60 +k=1 +x_0=5500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
 	    var dest = new Proj4js.Proj('EPSG:22185');
 		
@@ -230,7 +203,8 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
             });
 			
 		//Se dibuja en el mapa el buffer calculado	
-		var mypolygon = new OpenLayers.Feature.Vector(OpenLayers.Geometry.fromWKT(bufferDibujar.responseText));
+		var wkt = OpenLayers.Geometry.fromWKT(bufferDibujar.responseText);
+		var mypolygon = new OpenLayers.Feature.Vector(wkt);
 		this.layer.addFeatures([mypolygon]);
 		
 		
@@ -243,7 +217,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 		for(i=0;i<cantidadCapasVisibles;i++){
 			if(this.map.layers[i].CLASS_NAME=="OpenLayers.Layer.WMS" && this.map.layers[i].visibility){
 		 // Recupera los datos de la capa en cuestion	
-			var arregloWfs = this.wfs(this.map.layers[i].name);
+			var arregloWfs = this.wfs(this.map.layers[i].params.LAYERS);
 		
 		//	Para cada capa visible busca la interseccion con el buffer
 		    for (var j=0; j<arregloWfs.length; j++) {
@@ -263,7 +237,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
     // create the data store
     var store = new Ext.data.ArrayStore({
         fields: [
-           {name: 'nombre'},
+           {name: 'lugar'},
 		   {name: 'punto'}
         ]
     });
@@ -278,12 +252,12 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
         
         columns: [
             {
-                id       :'nombre',
-                header   : 'Nombre', 
+                id       :'lugar',
+                header   : 'Lugar', 
                 width    : 80, 
 				height: 100,
                 sortable : true, 
-                dataIndex: 'nombre'
+                dataIndex: 'lugar'
             },
             {
                 xtype: 'actioncolumn',
@@ -408,7 +382,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 		    var respuesta = OpenLayers.Request.GET({
                     url: "geoserver/wfs",
                     params: {
-                            typeName: "Idesf:"+evt,
+                            typeName: evt,
                             service: "WFS",
                             version: "1.1.0",
                             outputFormat: "JSON", // Usamos JSON para que la respuesta sea mas rapida
