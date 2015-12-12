@@ -37,7 +37,8 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
             // Obtiene una referencia a la capa de vector de app.js
             this.layer = target.getLayerRecordFromMap({
                 name: 'sketch',
-                source: 'ol'
+                source: 'ol',
+				title: 'Area de Influencia'
             }).getLayer();
 			
 			//Inicializa las variables que usara GMaps para calculo de ruta
@@ -58,7 +59,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 			
 			//Acción para la probar WFS
                     new GeoExt.Action(Ext.apply({
-                    text: 'Area de Influencia: ',
+                    text: 'Area de Influencia',
 					handler: this.muestraMenu.createDelegate(this),
                     control: new OpenLayers.Control.DrawFeature(
                         this.layer,OpenLayers.Handler.Point, {

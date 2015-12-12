@@ -32,15 +32,11 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 
 			function success(pos) {
 			cord = pos.coords;
-			//alert(cord.latitude);
-			console.log('Your current position is:');
-			console.log('Latitude : ' + crd.latitude);
-			console.log('Longitude: ' + crd.longitude);
-			console.log('More or less ' + crd.accuracy + ' meters.');
+			
 				};
 
 			function error(err) {
-			console.warn('ERROR(' + err.code + '): ' + err.message);
+			console.warn('ERROR: No se pudo calcular su ubicación!');
 			alert(err.message);
 				};
 
@@ -84,7 +80,8 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 			
 			//Acción para la probar WFS
                     new GeoExt.Action(Ext.apply({
-                    text: 'Area de Influencia: ',
+                    text: 'Area de Influencia',
+					cls: 'miClase',
 					handler: this.muestraMenu.createDelegate(this),
                     control: new OpenLayers.Control.DrawFeature(
                         this.layer,OpenLayers.Handler.Point, {
@@ -266,7 +263,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
     // create the data store
     var store = new Ext.data.ArrayStore({
         fields: [
-           {name: 'lugar'},
+           {name: 'nombre'},
 		   {name: 'punto'}
         ]
     });
@@ -281,12 +278,12 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
         
         columns: [
             {
-                id       :'lugar',
-                header   : 'Lugar', 
+                id       :'nombre',
+                header   : 'Nombre', 
                 width    : 80, 
 				height: 100,
                 sortable : true, 
-                dataIndex: 'lugar'
+                dataIndex: 'nombre'
             },
             {
                 xtype: 'actioncolumn',

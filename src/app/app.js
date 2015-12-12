@@ -79,7 +79,7 @@
     }, {
 		title: "Lugares cercanos a Usted",
         id: "lugaresCercanos",
-        height: 270,
+        height: 320,
 		hidden: true,
 		outputTarget: "lugaresCercanos"
     }]
@@ -96,12 +96,6 @@
             tbar: [] // Los botones se agregaran en "tree.bbar" posteriormente
         },
         outputTarget: "arbolCapas"
-    }, {
-        ptype: "gxp_addlayers",
-        actionTarget: "tree.tbar"
-    }, {
-        ptype: "gxp_removelayer",
-        actionTarget: ["tree.tbar", "tree.contextMenu"]
     },
 	{ ptype: "app_areainfluenciamobile",outputTarget: "map.tbar"},
 	{ ptype: "app_mostrarmenu", outputTarget: "lugaresCercanos"}
@@ -114,9 +108,7 @@
             url: "/geoserver/wms",
             version: "1.1.1"
         },
-        osm: {
-            ptype: "gxp_osmsource"
-        },
+        
 		google: {
 			ptype: "gxp_googlesource"
 } ,
@@ -126,7 +118,7 @@
     // map and layers
     map: {
         id: "mymap", // id needed to reference map in portalConfig above
-        title: "Mapa",
+       
         projection: "EPSG:900913",
         center: [-6755000.758211, -3715572.3184791],
         zoom: 12,
@@ -140,14 +132,33 @@
             // Capa Vector para mostrar nuestras geometrias y los resultados del procesamiento
             source: "ol",
             name: "sketch",
-            type: "OpenLayers.Layer.Vector",
+			type: "OpenLayers.Layer.Vector",
 			selected: true,
-			projection: "EPSG:4326"
+			projection: "EPSG:4326",
+			args: ["Area de Influencia"]
+        },
+		
+		{
+            // Capa calles   ---   Son capas SHP
+            source: "local",
+            name: "Idesf:bomberos_zapadores",
+			title: "Bomberos Zapadores",
+			selected: false,
+			visibility: false
+        },
+		{
+            // Capa calles   ---   Son capas SHP
+            source: "local",
+            name: "Idesf:bomberos_voluntarios",
+			title: "Bomberos Voluntarios",
+			selected: false,
+			visibility: false
         },
 		{
             // Capa calles    ---   Son capas SHP
             source: "local",
             name: "Idesf:hospitales",
+			title: "Hospitales",
 			selected: true,
 			visibility: true
         },
@@ -155,6 +166,7 @@
             // Capa calles   ---   Son capas SHP
             source: "local",
             name: "Idesf:comisarias",
+			title: "Comisarias",
 			selected: true,
 			visibility: true
         },
@@ -162,9 +174,11 @@
             // Capa calles   ---   Son capas SHP
             source: "local",
             name: "Idesf:escuelas",
+			title: "Escuelas",
 			selected: false,
 			visibility: false
-        }],
+        }
+		],
         items: [{
             xtype: "gx_zoomslider",
             vertical: true,
@@ -232,12 +246,6 @@ var app = new gxp.Viewer({
             tbar: [] // Los botones se agregaran en "tree.bbar" posteriormente
         },
         outputTarget: "arbolCapas"
-    }, {
-        ptype: "gxp_addlayers",
-        actionTarget: "tree.tbar"
-    }, {
-        ptype: "gxp_removelayer",
-        actionTarget: ["tree.tbar", "tree.contextMenu"]
     },
 	{ ptype: "app_areainfluencia",outputTarget: "map.tbar"},
 	{ ptype: "app_mostrarmenu", outputTarget: "lugaresCercanos"}
@@ -262,7 +270,7 @@ var app = new gxp.Viewer({
     // map and layers
     map: {
         id: "mymap", // id needed to reference map in portalConfig above
-        title: "Mapa",
+       
         projection: "EPSG:900913",
         center: [-6755000.758211, -3715572.3184791],
         zoom: 12,
@@ -276,21 +284,41 @@ var app = new gxp.Viewer({
             // Capa Vector para mostrar nuestras geometrias y los resultados del procesamiento
             source: "ol",
             name: "sketch",
+			title: "Area de Influencia",
             type: "OpenLayers.Layer.Vector",
 			selected: true,
 			projection: "EPSG:4326"
         },
+		
 		{
-            // Capa calles    ---   Son capas SHP
+            // Capa calles   ---   Son capas SHP
             source: "local",
-            name: "Idesf:hospitales",
+            name: "Idesf:bomberos_zapadores",
+			title: "Bomberos Zapadores",
 			selected: false,
 			visibility: false
         },
 		{
             // Capa calles   ---   Son capas SHP
             source: "local",
+            name: "Idesf:bomberos_voluntarios",
+			title: "Bomberos Voluntarios",
+			selected: false,
+			visibility: false
+        },
+		{
+            // Capa calles    ---   Son capas SHP
+            source: "local",
+            name: "Idesf:hospitales",
+			title: "Hospitales",
+			selected: true,
+			visibility: true
+        },
+		{
+            // Capa calles   ---   Son capas SHP
+            source: "local",
             name: "Idesf:comisarias",
+			title: "Comisarias",
 			selected: true,
 			visibility: true
         },
@@ -298,9 +326,11 @@ var app = new gxp.Viewer({
             // Capa calles   ---   Son capas SHP
             source: "local",
             name: "Idesf:escuelas",
-			selected: true,
-			visibility: true
-        }],
+			title: "Escuelas",
+			selected: false,
+			visibility: false
+        }
+		],
         items: [{
             xtype: "gx_zoomslider",
             vertical: true,
@@ -308,5 +338,5 @@ var app = new gxp.Viewer({
         }]
     }
 
-});
+}); 
 }
