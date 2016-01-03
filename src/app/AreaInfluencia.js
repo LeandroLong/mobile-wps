@@ -96,9 +96,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 						mode: 'local',
 						width: 80,
 						forceSelection: true,
-						valueField: "lea"
 					});
-			
 			this.addOutput(combo);
         }, this);
     },
@@ -458,12 +456,6 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 			lugar.hide();
 			arbol.ownerCt.doLayout();
 		}
-		
-		
-		
-		
-       
-	
 	}
 
 });

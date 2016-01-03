@@ -82,8 +82,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
 						triggerAction: 'all',
 						mode: 'local',
 						width: 80,
-						forceSelection: true,
-						valueField: "lea"
+						forceSelection: true
 					});
 			
 			this.addOutput(combo);
@@ -386,7 +385,7 @@ var AreaInfluenciaBuffer = Ext.extend(gxp.plugins.Tool, {
                             service: "WFS",
                             version: "1.1.0",
                             outputFormat: "JSON", // Usamos JSON para que la respuesta sea mas rapida
-                            readFormat: new OpenLayers.Format.GeoJSON(),
+                      
                             request: "GetFeature"
                     },
 					async: false

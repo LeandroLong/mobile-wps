@@ -5,14 +5,11 @@
  * @require OpenLayers/Control/DragFeature.js
  * @require OpenLayers/Handler/Polygon.js
  * @require OpenLayers/Handler/Path.js
- * @require OpenLayers/WPSClient.js
  * @require OpenLayers/Geometry.js
- * @require OpenLayers/Format/WFS.js
- * @require OpenLayers/Format/WPSExecute.js
  * @require OpenLayers/Format/WKT.js
  * @require OpenLayers/Control/GetFeature.js
  * @require OpenLayers/Proj4js.js
- * @require MostrarMenu.js
+ * @require AreaInfluenciaDondeEstoy.js
  */
 
  
@@ -22,11 +19,13 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
     
     /** Inicio del plugin */
     init: function(target) {
+		DondeEstoy.superclass.init.apply(this, arguments);
+			
 		
-		this.cord;
+					
 			var options = {
 			enableHighAccuracy: false,
-			timeout: 5000,
+			timeout: 950,
 			maximumAge: 0
 			};
 
@@ -36,19 +35,16 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 				};
 
 			function error(err) {
-			console.warn('ERROR: No se pudo calcular su ubicación!');
-			alert(err.message);
+			
+			alert('ERROR: No se pudo calcular su ubicación!');
+			return;
 				};
 
 			navigator.geolocation.getCurrentPosition(success, error, options);
 			
-        DondeEstoy.superclass.init.apply(this, arguments);
-		
-		
-		
-			
+       			
 		    this.map = target.mapPanel.map;
-		//	this.lugares = DondeEstoy.superclass.constructor.call(this,target.portalConfig.items[2].items[1]); 
+	
 							  
         // Añade botones de acción cuando el VISOR GPX(wiever) está listo
         target.on('ready', function() {
@@ -78,82 +74,125 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 			// Inicio de agregacion de ACCIONES
             this.addActions([
 			
-			//Acción para la probar WFS
-                    new GeoExt.Action(Ext.apply({
+			        new GeoExt.Action(Ext.apply({
                     text: 'Donde Estoy?',
 					handler: this.muestraMenu.createDelegate(this),
-                    control: new OpenLayers.Control.DrawFeature(
-                        this.layer,OpenLayers.Handler.Point, {
-                        eventListeners: {
-                            featureadded: this.dondeEstoy,
-							scope: this
-                        }
-                    })
-                }, actionDefaults))					
-				
-				
+                    control: new OpenLayers.Control()
+                }, actionDefaults))
             ]); // Fin de agregación de ACCIONES
 			
-		
+			
+			var comboDE = new Ext.form.ComboBox({
+						emptyText:'Seleccione un rango..',
+						typeAhead: true,
+						editable: false,
+						store: ['200 mts', '350 mts', '500 mts', '1000 mts', '1500 mts', '2000 mts','3000 mts','5000 mts','6000 mts'],
+						triggerAction: 'all',
+						mode: 'local',
+						width: 80,
+						forceSelection: true,
+						hidden: true,
+					    selectOnFocus: true,
+						listeners: {
+							select: function(comboDE, selection) {
+							this.buffer(this,cord,selection.data.field1);
+									},
+							scope: this
+						}
+					});
+			
+			this.addOutput(comboDE);		
         }, this);
     },
 	
 	// Proceso que ejecuta un BUFFER
-    buffer: function(evt) {
+    buffer: function(todo,cord,selection) {
 		
-								
 		
+	
+		var area = new AreaInfluenciaDondeEstoy();
+		area.buffer(todo,cord,selection);
+				
 		},
 	
 	
 	muestraMenu: function(objeto){
-			var arbol = Ext.getCmp('arbolCapas');
-			var lugar=Ext.getCmp('lugaresCercanos');
+		
+		
+		if(typeof cord === 'undefined'){
+			
+			 window.setTimeout(function () {
+				 
+				 
+				 var options = {
+			enableHighAccuracy: false,
+			timeout: 1950,
+			maximumAge: 0
+			};
+
+			function success(pos) {
+			cord = pos.coords;
+			
+				};
+
+			function error(err) {
+			
+			alert('ERROR: No se pudo calcular su ubicación, Recargue la Página!');
+				};
+
+			navigator.geolocation.getCurrentPosition(success, error, options);
+						 
+						 
+						 },'2000');
+		}
+		
+		//Borra los poligonos dibujados
+		for(var z=this.layer.features.length-1; z>=0; --z){
+			this.layer.removeFeatures(this.layer.features[z]);
+		}
+			
+		var arbol = Ext.getCmp('arbolCapas');
+		var lugar=Ext.getCmp('lugaresCercanos');
 			
 			
 		if(objeto.pressed){
 			
-		
-		 
-		 
-		lugar.show();
-		arbol.ownerCt.doLayout();
-			
-		}
-		else {
-			lugar.hide();
-			arbol.ownerCt.doLayout();
-		}
-		
-		
-		
-		 Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
-		 Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
-		 var origen = new Proj4js.Proj('EPSG:4326');
-		 var destino = new Proj4js.Proj('EPSG:900913');
-		 
-				
-		var puntoBuffer = new Proj4js.Point(cord.longitude,cord.latitude);
+			 Proj4js.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+			 Proj4js.defs["EPSG:4326"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+			 var origen = new Proj4js.Proj('EPSG:4326');
+			 var destino = new Proj4js.Proj('EPSG:900913');
+		     
+			 var puntoBuffer = new Proj4js.Point(cord.longitude,cord.latitude);
 		
 		Proj4js.transform(origen, destino, puntoBuffer);
+		
+		//Crea un punto donde va a centrar el mapa una vez que dibuje la ruta
+		 var pixel = new OpenLayers.LonLat(puntoBuffer.x,puntoBuffer.y);
+		 //Centra el mapa al punto especificado
+		 this.map.moveTo(pixel,15,true);
 		
 		
 		var miPunto="POINT("+puntoBuffer.x+" "+""+puntoBuffer.y+")";
 		var wkt = OpenLayers.Geometry.fromWKT(miPunto);
 		var mypolygon = new OpenLayers.Feature.Vector(wkt);
 		this.layer.addFeatures([mypolygon]);
-		
-						 						 
-		 var puntoCentro = cord;
+			
 		
 		 
-		 Proj4js.transform(origen, destino, puntoCentro);
-				 
-		 //Crea un punto donde va a centrar el mapa una vez que dibuje la ruta
-		 var pixel = new OpenLayers.LonLat(puntoCentro.x,puntoCentro.y);
-		 //Centra el mapa al punto especificado
-		 this.map.moveTo(pixel,15,true);
-	
+		 
+		lugar.show();
+		arbol.ownerCt.doLayout();
+		
+		this.output[0].setVisible(true);
+			
+		}
+		else {
+			lugar.hide();
+			arbol.ownerCt.doLayout();
+			this.output[0].setVisible(false);
+		}
+		
+		
 	}
 
 });
