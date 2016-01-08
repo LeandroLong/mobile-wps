@@ -11,11 +11,11 @@
  * @require OpenLayers/Layer/Vector.js
  * @require OpenLayers/Renderer/Canvas.js
  * @require GeoExt/widgets/ZoomSlider.js
- * @require RowExpander.js
  * @require plugins/GoogleSource.js
  * @require plugins/WMSGetFeatureInfo.js
  * @require MostrarMenu.js
  * @require DondeEstoy.js
+ * @require MiArbol.js
 
  */
 
@@ -70,7 +70,7 @@
     
     // configuration of all tool plugins for this application
     tools: [{
-        ptype: "gxp_layertree",
+        ptype: "gxp_miarbol",
         outputConfig: {
             id: "tree",
             border: true,

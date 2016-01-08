@@ -5324,3 +5324,7 @@ body.ext-ie6.x-body-masked .x-window select {
 .ext-gecko2 .ext-mb-fix-cursor {
     overflow:auto;
 }
+
+.icon-go {
+    background-image: url(../images/gray/window/left-right.png) !important;
+}

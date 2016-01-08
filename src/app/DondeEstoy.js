@@ -8,8 +8,10 @@
  * @require OpenLayers/Geometry.js
  * @require OpenLayers/Format/WKT.js
  * @require OpenLayers/Control/GetFeature.js
+ * @require OpenLayers/Control/SelectFeature.js
  * @require OpenLayers/Proj4js.js
  * @require AreaInfluenciaDondeEstoy.js
+ * @require MostrarMenu.js
  */
 
  
@@ -25,7 +27,7 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 					
 			var options = {
 			enableHighAccuracy: false,
-			timeout: 950,
+			timeout: 1200,
 			maximumAge: 0
 			};
 
@@ -36,7 +38,7 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 
 			function error(err) {
 			
-			alert('ERROR: No se pudo calcular su ubicación!');
+			
 			return;
 				};
 
@@ -75,13 +77,14 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
             this.addActions([
 			
 			        new GeoExt.Action(Ext.apply({
-                    text: 'Donde Estoy?',
+                    text: '  Donde Estoy',
+					iconCls: 'icon-go',
 					handler: this.muestraMenu.createDelegate(this),
                     control: new OpenLayers.Control()
                 }, actionDefaults))
             ]); // Fin de agregación de ACCIONES
 			
-			
+					
 			var comboDE = new Ext.form.ComboBox({
 						emptyText:'Seleccione un rango..',
 						typeAhead: true,
@@ -108,11 +111,9 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 	// Proceso que ejecuta un BUFFER
     buffer: function(todo,cord,selection) {
 		
-		
-	
 		var area = new AreaInfluenciaDondeEstoy();
 		area.buffer(todo,cord,selection);
-				
+					
 		},
 	
 	
@@ -126,7 +127,7 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 				 
 				 var options = {
 			enableHighAccuracy: false,
-			timeout: 1950,
+			timeout: 1000,
 			maximumAge: 0
 			};
 
@@ -137,7 +138,7 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 
 			function error(err) {
 			
-			alert('ERROR: No se pudo calcular su ubicación, Recargue la Página!');
+			alert('ERROR: No se pudo calcular su ubicación, haga click otra vez en el boton!');
 				};
 
 			navigator.geolocation.getCurrentPosition(success, error, options);
@@ -169,8 +170,7 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 		//Crea un punto donde va a centrar el mapa una vez que dibuje la ruta
 		 var pixel = new OpenLayers.LonLat(puntoBuffer.x,puntoBuffer.y);
 		 //Centra el mapa al punto especificado
-		 this.map.moveTo(pixel,15,true);
-		
+		 this.map.moveTo(pixel,15,true);		
 		
 		var miPunto="POINT("+puntoBuffer.x+" "+""+puntoBuffer.y+")";
 		var wkt = OpenLayers.Geometry.fromWKT(miPunto);
@@ -186,10 +186,17 @@ var DondeEstoy = Ext.extend(gxp.plugins.Tool, {
 		this.output[0].setVisible(true);
 			
 		}
-		else {
+		else {	
+		
+			
 			lugar.hide();
 			arbol.ownerCt.doLayout();
 			this.output[0].setVisible(false);
+			this.output[0].setValue(null);
+			this.directionsDisplay.setDirections({routes: []});
+			this.mostrarMenu.removeOutput();
+		
+			
 		}
 		
 		
